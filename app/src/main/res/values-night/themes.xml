@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.Serene" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/serene_lavender</item>
+        <item name="colorOnPrimary">@color/serene_surface</item>
+    </style>
+</resources>

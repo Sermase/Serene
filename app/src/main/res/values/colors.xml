@@ -1,0 +1,11 @@
+<resources>
+    <color name="serene_lavender">#DCC7F8</color>
+    <color name="serene_blush">#FADDE1</color>
+    <color name="serene_sky">#CDE8FF</color>
+    <color name="serene_mint">#D8F3DC</color>
+    <color name="serene_sand">#F9F1E7</color>
+    <color name="serene_text_primary">#2E2A33</color>
+    <color name="serene_text_secondary">#6B6575</color>
+    <color name="serene_surface">#FFFFFFFF</color>
+    <color name="ic_launcher_background">#F3EDF7</color>
+</resources>
