@@ -1,31 +1,27 @@
 package com.serene.data
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-
-class DiaryRepository {
-    private val _entries = MutableStateFlow<List<RelationshipEntry>>(emptyList())
-    val entries: StateFlow<List<RelationshipEntry>> = _entries
+class DiaryRepository(
+    private val dataSource: DiaryDataSource = InMemoryDiaryDataSource()
+) {
+    val entries = dataSource.entries
 
     suspend fun addEntry(entry: RelationshipEntry) {
-        // TODO: Replace with Firebase persistence.
-        delay(150)
-        _entries.value = _entries.value + entry
+        dataSource.addEntry(entry)
     }
 
-    suspend fun updateEntry(updated: RelationshipEntry) {
-        delay(150)
-        _entries.value = _entries.value.map { if (it.id == updated.id) updated else it }
+    suspend fun updateEntry(entry: RelationshipEntry) {
+        dataSource.updateEntry(entry)
     }
 
     suspend fun deleteEntry(id: String) {
-        delay(150)
-        _entries.value = _entries.value.filterNot { it.id == id }
+        dataSource.deleteEntry(id)
     }
 
-    suspend fun loadInitialEntries() {
-        delay(300)
-        _entries.value = emptyList()
+    suspend fun importEntries(entries: List<RelationshipEntry>) {
+        dataSource.importEntries(entries)
+    }
+
+    suspend fun refreshEntries() {
+        dataSource.refresh()
     }
 }
