@@ -1,32 +1,61 @@
 package com.serene.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.serene.SereneApplication
 import com.serene.data.DiaryRepository
 import com.serene.data.EntryType
 import com.serene.data.RelationshipEntry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
 class DiaryViewModel(
-    private val repository: DiaryRepository = DiaryRepository()
+    private val repository: DiaryRepository
 ) : ViewModel() {
 
     private val _currentEntry = MutableStateFlow(RelationshipEntry())
-    val currentEntry: StateFlow<RelationshipEntry> = _currentEntry
+    val currentEntry: StateFlow<RelationshipEntry> = _currentEntry.asStateFlow()
 
     private val _isEditing = MutableStateFlow(false)
-    val isEditing: StateFlow<Boolean> = _isEditing
+    val isEditing: StateFlow<Boolean> = _isEditing.asStateFlow()
 
-    val entries = repository.entries
+    private val _uiState = MutableStateFlow(DiaryUiState())
+    val uiState: StateFlow<DiaryUiState> = _uiState.asStateFlow()
 
     init {
+        observeEntries()
+        refreshEntries()
+    }
+
+    private fun observeEntries() {
         viewModelScope.launch {
-            repository.loadInitialEntries()
+            repository.entries.collect { list ->
+                _uiState.update { it.copy(entries = list) }
+            }
+        }
+    }
+
+    private fun refreshEntries() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            try {
+                repository.refreshEntries()
+            } catch (throwable: Throwable) {
+                _uiState.update {
+                    it.copy(errorMessage = throwable.message ?: "Ocurrió un error al sincronizar")
+                }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
         }
     }
 
@@ -83,25 +112,63 @@ class DiaryViewModel(
     fun onSaveEntry() {
         val entry = _currentEntry.value
         viewModelScope.launch {
-            if (_isEditing.value) {
-                repository.updateEntry(entry)
-            } else {
-                repository.addEntry(entry.copy(createdAt = OffsetDateTime.now()))
+            try {
+                if (_isEditing.value) {
+                    repository.updateEntry(entry)
+                } else {
+                    repository.addEntry(entry.copy(createdAt = OffsetDateTime.now()))
+                }
+                _currentEntry.value = RelationshipEntry()
+                _isEditing.value = false
+            } catch (throwable: Throwable) {
+                _uiState.update {
+                    it.copy(errorMessage = throwable.message ?: "No se pudo guardar la entrada")
+                }
             }
-            _currentEntry.value = RelationshipEntry()
-            _isEditing.value = false
         }
     }
 
     fun onDeleteEntry(entry: RelationshipEntry) {
         viewModelScope.launch {
-            repository.deleteEntry(entry.id)
+            try {
+                repository.deleteEntry(entry.id)
+            } catch (throwable: Throwable) {
+                _uiState.update {
+                    it.copy(errorMessage = throwable.message ?: "No se pudo eliminar la entrada")
+                }
+            }
         }
     }
 
     fun importEntries(entries: List<RelationshipEntry>) {
         viewModelScope.launch {
-            entries.forEach { repository.addEntry(it) }
+            try {
+                repository.importEntries(entries)
+            } catch (throwable: Throwable) {
+                _uiState.update {
+                    it.copy(errorMessage = throwable.message ?: "No se pudieron importar las entradas")
+                }
+            }
+        }
+    }
+
+    data class DiaryUiState(
+        val entries: List<RelationshipEntry> = emptyList(),
+        val isLoading: Boolean = false,
+        val errorMessage: String? = null
+    )
+
+    fun clearError() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application =
+                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as SereneApplication)
+                DiaryViewModel(application.container.diaryRepository)
+            }
         }
     }
 }

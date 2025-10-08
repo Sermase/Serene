@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Delete
@@ -44,6 +45,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -76,6 +78,8 @@ import com.serene.data.Emotion
 import com.serene.data.EntryType
 import com.serene.data.EventCategory
 import com.serene.data.RelationshipEntry
+import com.serene.data.DiaryRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.serene.ui.theme.SereneTheme
 import kotlinx.coroutines.launch
 import java.io.File
@@ -120,7 +124,7 @@ private val eventCategories = listOf(
 )
 
 @Composable
-fun SereneApp(viewModel: DiaryViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun SereneApp(viewModel: DiaryViewModel = viewModel(factory = DiaryViewModel.Factory)) {
     SereneTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             DiaryScreen(viewModel)
@@ -131,7 +135,8 @@ fun SereneApp(viewModel: DiaryViewModel = androidx.lifecycle.viewmodel.compose.v
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun DiaryScreen(viewModel: DiaryViewModel) {
-    val entries by viewModel.entries.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val entries = uiState.entries
     val currentEntry by viewModel.currentEntry.collectAsState()
     val isEditing by viewModel.isEditing.collectAsState()
     var selectedTab by remember { mutableStateOf(0) }
@@ -162,6 +167,24 @@ private fun DiaryScreen(viewModel: DiaryViewModel) {
                 .fillMaxSize()
                 .background(pastelGradient)
         ) {
+            if (uiState.isLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth(),
+                    color = Color(0xFFBA68C8)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            uiState.errorMessage?.let { message ->
+                ErrorBanner(
+                    message = message,
+                    onDismiss = viewModel::clearError
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
             Header(onExport = {
                 exportEntries(context.cacheDir, entries)
             }, onImport = {
@@ -237,9 +260,43 @@ private fun DiaryScreen(viewModel: DiaryViewModel) {
             onImport = { imported ->
                 coroutineScope.launch {
                     viewModel.importEntries(imported)
+                    showImportSheet = false
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun ErrorBanner(message: String, onDismiss: () -> Unit) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                tint = Color(0xFFD32F2F)
+            )
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFFD32F2F),
+                modifier = Modifier.weight(1f)
+            )
+            TextButton(onClick = onDismiss) {
+                Text("Entendido", color = Color(0xFFD32F2F))
+            }
+        }
     }
 }
 
@@ -1009,5 +1066,5 @@ private fun SerenityCalendar(selectedDate: LocalDate, onDateSelected: (LocalDate
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewSerene() {
-    SereneApp(viewModel = DiaryViewModel())
+    SereneApp(viewModel = DiaryViewModel(DiaryRepository()))
 }
