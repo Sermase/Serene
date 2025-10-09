@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.compose")
+
 }
 
 android {
@@ -46,9 +47,9 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
+    //composeOptions {
+    //  kotlinCompilerExtensionVersion = "1.5.12"
+    //}
 
     packaging {
         resources {
@@ -70,16 +71,19 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 
     // Firebase dependencies - to be configured by the developer
-    //implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-analytics-ktx")
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+
+    // 2. Ahora declara las librerías de Firebase que necesitas, SIN especificar la versión.
+    // La BoM se encargará de encontrar la versión correcta para ti.
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -88,3 +92,4 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+apply(plugin = "com.google.gms.google-services")

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="ic_launcher_background">#EDE7F6</color>
+    <string name="app_name">Serene</string>
+    <string name="gcm_defaultSenderId" translatable="false">1006058409184</string>
+    <string name="google_api_key" translatable="false">AIzaSyDMY-3_WkyRC0AFTaAw4i-mKx3mI0pwZPc</string>
+    <string name="google_app_id" translatable="false">1:1006058409184:android:dbd6644aea6af51365d485</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDMY-3_WkyRC0AFTaAw4i-mKx3mI0pwZPc</string>
+    <string name="google_storage_bucket" translatable="false">serene-ae012.firebasestorage.app</string>
+    <string name="project_id" translatable="false">serene-ae012</string>
+    <style name="Theme.Serene" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowLightStatusBar" ns1:targetApi="m">true</item>
+    </style>
+</resources>

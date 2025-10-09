@@ -1,6 +1,10 @@
 package com.serene
 
 import android.content.Context
+// Importaciones que faltan
+import com.serene.data.FirebaseDiaryDataSource // Asumiendo que esta clase está en el paquete 'data'
+import com.google.firebase.firestore.FirebaseFirestore
+// Fin de las importaciones
 import com.serene.data.DiaryRepository
 import com.serene.data.InMemoryDiaryDataSource
 

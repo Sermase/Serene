@@ -1,0 +1,30 @@
+[
+    {
+        "merged": "com.serene.app-debug-75:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.serene.app-main-77:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.serene.app-debug-75:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.serene.app-main-77:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.serene.app-debug-75:/mipmap_ic_launcher.xml.flat",
+        "source": "com.serene.app-main-77:/mipmap/ic_launcher.xml"
+    },
+    {
+        "merged": "com.serene.app-debug-75:/mipmap_ic_launcher_round.xml.flat",
+        "source": "com.serene.app-main-77:/mipmap/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.serene.app-debug-75:/xml_data_extraction_rules.xml.flat",
+        "source": "com.serene.app-main-77:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.serene.app-debug-75:/xml_backup_rules.xml.flat",
+        "source": "com.serene.app-main-77:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.serene.app-debug-75:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.serene.app-main-77:/mipmap-anydpi-v26/ic_launcher.xml"
+    }
+]

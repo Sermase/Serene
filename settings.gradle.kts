@@ -1,4 +1,3 @@
-import kotlin.io.path.name
 
 pluginManagement {
     repositories {
