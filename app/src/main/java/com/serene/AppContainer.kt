@@ -10,5 +10,7 @@ class AppContainer(context: Context) {
      * Cambia esta implementación por `FirebaseDiaryDataSource(Firebase.firestore)` cuando
      * quieras persistir los datos en Firestore.
      */
-    val diaryRepository: DiaryRepository = DiaryRepository(InMemoryDiaryDataSource())
+    val diaryRepository: DiaryRepository = DiaryRepository(
+        FirebaseDiaryDataSource(FirebaseFirestore.getInstance())
+    )
 }
